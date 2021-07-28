@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="#" id="burger-form">
+        конструктор бургера
+        <fieldset id="burger-type">
+            <legend>Выберите размер: </legend>
+            <input type="radio" name="size" id="big" value="big" data-price="100" data-calories="40" checked>
+            <label for="bigburger">Большой (100 рублей, 40 калорий)</label><br>
+            <input type="radio" name="size" id="small" value="small" data-price="50" data-calories="20">
+            <label for="bigburger">Маленький (50 рублей, 20 калорий)</label><br>
+        </fieldset>
+        <fieldset class="hamburger-fieldset-inside">
+            <legend>Выберите начинку бургера:</legend>
+            <input type="radio" name="add" id="cheese" value="Cheese" class="hamburger-input" data-price="10"
+                data-calories="20" checked>
+            <label for="cheese">Сыр (10 рублей, 20 калорий)</label><br>
+            <input type="radio" name="add" id="salad" value="Salad" class="hamburger-input" data-price="20"
+                data-calories="5">
+            <label for="salad">Салат (20 рублей, 5 калорий)</label><br>
+            <input type="radio" name="add" id="potato" value="Potato" class="hamburger-input" data-price="15"
+                data-calories="10">
+            <label for="potato">Картофель (15 рублей, 10 калорий)</label><br>
+        </fieldset>
+
+        <fieldset class="hamburger-fieldset-inside">
+            <legend>Выберите доп. опцию: </legend>
+            <input type="checkbox" name="topings" id="seasoning" value="Spices" class="hamburger-input" data-price="15"
+                data-calories="0">
+            <label for="seasoning">Посыпать приправой (15 рублей, 0 калорий)</label><br>
+            <input type="checkbox" name="topings" id="mayonnaise" value="Mayo" class="hamburger-input" data-price="20"
+                data-calories="5">
+            <label for="mayonnaise">Полить майонезом (20 рублей, 5 калорий)</label><br>
+        </fieldset>
+
+        <a href="#" id="check">Собрать бургер</a>
+
+        <p id="result">Итоговая стоимость: <span id="price">0</span> <br>
+            Кол-во калорий: <span id="calories">0</span></p>
+
+        </fieldset>
+        <script>
+            class Param {/*Конструктор обьекта параметров  который в качестве свойств принимает значения атрибутов
+                */
+                constructor(element) {
+                    this.name = element.value;
+                    this.price = +element.dataset['price'];
+                    this.calories = +element.dataset['calories'];
+                }
+            }
+            class Burger {
+                /* Конструктор обьекта бургер который в свойства принимает два обьекта параметр 
+                и массив из выбранных чекбоксов
+                */
+                constructor(size, add, topping) {//add - состав
+                    this.size = new Param(this._select(size));
+                    this.add = new Param(this._select(add));
+                    this.toppings = this._getToppings(topping);
+                }
+
+                _getToppings(name) {/* Метод записывает и возвращает массив из обьектов параметров выбранных методом _selectAll(name)*/
+                    let result = [];
+                    this._selectAll(name).forEach(el => result.push(new Param(el)))
+                    return result;
+                }
+
+                _select(name) {// метод возвращает ссылку на выбранный инпут с указанным именем
+                    return document.querySelector(`input[name=${name}]:checked`);
+                }
+
+                _selectAll(name) {//метод возвращает несколько ссылок на все выбранные чекбоксы
+                    return [...document.querySelectorAll(`input[name=${name}]:checked`)];
+                }
+
+                _sumPrice() { //метод суммирует все свойства price
+                    //console.log(this.toppings);
+                    let result = this.size.price + this.add.price;
+                    this.toppings.forEach(el => result += el.price);
+                    return result;
+                }
+
+                _sumCalories() {//метод суммирует все свойства calories
+                    let result = this.size.calories + this.add.calories;
+                    this.toppings.forEach(el => result += el.calories);
+                    return result;
+                }
+
+                showSum(price, calories) {//метод выводит на страницу результаты расчетов 
+                    document.querySelector(price).textContent = this._sumPrice();
+                    document.querySelector(calories).textContent = this._sumCalories();
+                }
+            }
+            let but = document.getElementById('check');
+            but.addEventListener('click', () => {
+                let burger = new Burger('size', 'add', 'topings');
+                console.log(burger);
+                burger.showSum("#price", "#calories");
+            });
+        </script>
+
+    </form>
+</body>
+
+</html>
